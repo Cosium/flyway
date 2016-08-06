@@ -45,7 +45,8 @@ public class MigrationInfoHelper {
 
     @Deprecated
     private static Triplet<MigrationVersion, Boolean, String> extractLegacyVersionAndDescriptionAndOptional(String migrationName,
-                                                                                                            String prefix, String separator, String suffix){
+                                                                                                            String prefix, String separator, String suffix,
+                                                                                                            boolean appendDescriptionHashToVersion){
         String quotedPrefix = Pattern.quote(prefix);
         String quotedSeparator = Pattern.quote(separator);
         String quotedSuffix = Pattern.quote(suffix);
@@ -57,9 +58,12 @@ public class MigrationInfoHelper {
                     + "(It should look like this: " + prefix + "1_2" + separator + "[" + REQUIRED + "|" + OPTIONAL + "]" + separator + "Description" + suffix + ")");
         }
 
-        String rawVersion = matcher.group(1);
-        MigrationVersion version = StringUtils.hasText(rawVersion)? MigrationVersion.fromVersion(rawVersion): null;
         String description = matcher.group(2).replaceAll("_", " ");
+        String rawVersion = matcher.group(1);
+        if(StringUtils.hasText(rawVersion) && appendDescriptionHashToVersion){
+            rawVersion = rawVersion + "_" + hash(description);
+        }
+        MigrationVersion version = StringUtils.hasText(rawVersion)? MigrationVersion.fromVersion(rawVersion): null;
         return Triplet.of(version, false, description);
     }
 
@@ -86,13 +90,16 @@ public class MigrationInfoHelper {
         if(!matcher.matches()){
             LOG.warn("To be removed migration name format: " + migrationName
                     + "(It should look like this: " + prefix + "1_2" + separator + "[" + REQUIRED + "|" + OPTIONAL + "]" + separator + "Description" + suffix + ")");
-            return extractLegacyVersionAndDescriptionAndOptional(migrationName, prefix, separator, suffix);
+            return extractLegacyVersionAndDescriptionAndOptional(migrationName, prefix, separator, suffix, appendDescriptionHashToVersion);
         }
 
-        String rawVersion = matcher.group(1);
-        MigrationVersion version = StringUtils.hasText(rawVersion)? MigrationVersion.fromVersion(rawVersion): null;
         boolean optional = OPTIONAL.equalsIgnoreCase(matcher.group(2));
         String description = matcher.group(3).replaceAll("_", " ");
+        String rawVersion = matcher.group(1);
+        if(StringUtils.hasText(rawVersion) && appendDescriptionHashToVersion){
+            rawVersion = rawVersion + "_" + hash(description);
+        }
+        MigrationVersion version = StringUtils.hasText(rawVersion)? MigrationVersion.fromVersion(rawVersion): null;
         return Triplet.of(version, optional, description);
     }
 

@@ -54,7 +54,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionDefaultsWithDescriptionHash() {
-        Pair<MigrationVersion, String> info = MigrationInfoHelper.extractVersionAndDescription("V9_4__EmailAxel.sql", "V", "__", ".sql", true);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4__EmailAxel.sql", "V", "__", ".sql", true);
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("9.4." +  MigrationInfoHelper.hash("EmailAxel"), version.toString());
@@ -127,7 +127,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionWithOptional(){
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__optional__Description.sql", "V_", "__", ".sql");
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__optional__Description.sql", "V_", "__", ".sql", false);
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("8.0", version.toString());
@@ -137,7 +137,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionWithRequired(){
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__required__Description.sql", "V_", "__", ".sql");
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__required__Description.sql", "V_", "__", ".sql", false);
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("8.0", version.toString());
@@ -147,7 +147,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test(expected = FlywayException.class)
     public void extractSchemaVersionWithIncorrectOptionalToken() {
-        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__toto__Description.sql", "V", "__", ".sql");
+        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__toto__Description.sql", "V", "__", ".sql", false);
     }
 
 }
