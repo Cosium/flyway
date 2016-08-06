@@ -295,6 +295,11 @@ public class Flyway implements FlywayConfiguration {
     private Comparator<ResolvedMigration> resolvedMigrationComparator = new ResolvedMigrationComparator();
 
     /**
+     * Whether description hash should be appended to the version
+     */
+    private boolean appendDescriptionHashToVersion;
+
+    /**
      * Creates a new instance of Flyway. This is your starting point.
      */
     public Flyway() {
@@ -313,6 +318,15 @@ public class Flyway implements FlywayConfiguration {
     @Override
     public Comparator<ResolvedMigration> getResolvedMigrationComparator() {
         return resolvedMigrationComparator;
+    }
+
+    @Override
+    public boolean isAppendDescriptionHashToVersion() {
+        return appendDescriptionHashToVersion;
+    }
+
+    public void setAppendDescriptionHashToVersion(boolean appendDescriptionHashToVersion) {
+        this.appendDescriptionHashToVersion = appendDescriptionHashToVersion;
     }
 
     @Override

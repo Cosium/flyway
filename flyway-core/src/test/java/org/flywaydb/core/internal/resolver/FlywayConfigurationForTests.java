@@ -182,6 +182,11 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     }
 
     @Override
+    public boolean isAppendDescriptionHashToVersion() {
+        return false;
+    }
+
+    @Override
     public String getEncoding() {
         return this.encoding;
     }

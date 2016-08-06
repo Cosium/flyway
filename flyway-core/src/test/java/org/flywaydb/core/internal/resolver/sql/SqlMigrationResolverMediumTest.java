@@ -43,7 +43,7 @@ public class SqlMigrationResolverMediumTest {
         SqlMigrationResolver sqlMigrationResolver =
                 new SqlMigrationResolver(null, new Scanner(Thread.currentThread().getContextClassLoader()),
                         new Location("filesystem:" + new File(path).getPath()), new ResolvedMigrationComparator(), PlaceholderReplacer.NO_PLACEHOLDERS,
-                        "UTF-8", "V", "R", "__", ".sql");
+                        "UTF-8", "V", "R", "__", ".sql", false);
         Collection<ResolvedMigration> migrations = sqlMigrationResolver.resolveMigrations();
 
         assertEquals(3, migrations.size());
