@@ -23,6 +23,8 @@ import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.configuration.FlywayConfiguration;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
+import org.flywaydb.core.internal.batch.DefaultMigrationBatchService;
+import org.flywaydb.core.internal.batch.MigrationBatchService;
 import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.flywaydb.core.internal.command.DbBaseline;
 import org.flywaydb.core.internal.command.DbClean;
@@ -300,6 +302,11 @@ public class Flyway implements FlywayConfiguration {
     private boolean appendDescriptionHashToVersion;
 
     /**
+     * The migration batch service to use
+     */
+    private MigrationBatchService migrationBatchService = new DefaultMigrationBatchService();
+
+    /**
      * Creates a new instance of Flyway. This is your starting point.
      */
     public Flyway() {
@@ -327,6 +334,11 @@ public class Flyway implements FlywayConfiguration {
 
     public void setAppendDescriptionHashToVersion(boolean appendDescriptionHashToVersion) {
         this.appendDescriptionHashToVersion = appendDescriptionHashToVersion;
+    }
+
+    @Override
+    public MigrationBatchService getMigrationBatchService() {
+        return migrationBatchService;
     }
 
     @Override
@@ -860,6 +872,13 @@ public class Flyway implements FlywayConfiguration {
     }
 
     /**
+     * @param migrationBatchService The migration batch service to use
+     */
+    public void setMigrationBatchService(MigrationBatchService migrationBatchService) {
+        this.migrationBatchService = migrationBatchService;
+    }
+
+    /**
      * Gets the callbacks for lifecycle notifications.
      *
      * @return The callbacks for lifecycle notifications. An empty array if none. (default: none)
@@ -979,7 +998,7 @@ public class Flyway implements FlywayConfiguration {
                 }
 
                 DbMigrate dbMigrate =
-                        new DbMigrate(connectionMetaDataTable, connectionUserObjects, dbSupport, metaDataTable,
+                        new DbMigrate(migrationBatchService, connectionMetaDataTable, connectionUserObjects, dbSupport, metaDataTable,
                                 schemas[0], migrationResolver, target, ignoreFutureMigrations, ignoreFailedFutureMigration, outOfOrder, flywayCallbacks);
                 return dbMigrate.migrate();
             }

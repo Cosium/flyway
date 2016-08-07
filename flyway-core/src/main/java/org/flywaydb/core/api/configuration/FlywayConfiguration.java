@@ -20,6 +20,7 @@ import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.resolver.ResolvedMigrationComparator;
+import org.flywaydb.core.internal.batch.MigrationBatchService;
 
 import javax.sql.DataSource;
 import java.util.Comparator;
@@ -218,4 +219,9 @@ public interface FlywayConfiguration {
      * @return True to append description hash to version. This allows multiple files to be named with the same version and different descriptions
      */
     boolean isAppendDescriptionHashToVersion();
+
+    /**
+     * @return The migration batch service
+     */
+    MigrationBatchService getMigrationBatchService();
 }

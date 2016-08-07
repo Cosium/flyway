@@ -25,6 +25,8 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
+import org.flywaydb.core.internal.batch.DefaultMigrationBatchService;
+import org.flywaydb.core.internal.batch.MigrationBatchService;
 
 /**
  * Dummy Implementation of {@link FlywayConfiguration} for unit tests.
@@ -184,6 +186,11 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     @Override
     public boolean isAppendDescriptionHashToVersion() {
         return false;
+    }
+
+    @Override
+    public MigrationBatchService getMigrationBatchService() {
+        return new DefaultMigrationBatchService();
     }
 
     @Override
