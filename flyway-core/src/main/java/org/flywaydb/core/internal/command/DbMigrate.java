@@ -122,7 +122,7 @@ public class DbMigrate {
      *
      * @param migrationBatchService       The migration batch service to use
      * @param connectionMetaDataTable     The connection to use.
-     * @param connectionUserObjects       The connection to use to perform the actual database migrations.
+     * @param connectionUserObjects       The connection to use to perform the actual database migrations. Can be null.
      * @param dbSupport                   Database-specific functionality.
      * @param metaDataTable               The database metadata table.
      * @param migrationResolver           The migration resolver.
@@ -138,7 +138,7 @@ public class DbMigrate {
                      FlywayCallback[] callbacks) {
         this.migrationBatchService = migrationBatchService;
         this.connectionMetaDataTable = connectionMetaDataTable;
-        this.connectionUserObjects = connectionUserObjects;
+        this.connectionUserObjects = dbSupport.supportsDdlTransactions()? connectionMetaDataTable: connectionUserObjects;
         this.dbSupport = dbSupport;
         this.metaDataTable = metaDataTable;
         this.schema = schema;
@@ -149,7 +149,7 @@ public class DbMigrate {
         this.outOfOrder = outOfOrder;
         this.callbacks = callbacks;
 
-        dbSupportUserObjects = DbSupportFactory.createDbSupport(connectionUserObjects, false);
+        dbSupportUserObjects = DbSupportFactory.createDbSupport(this.connectionUserObjects, false);
     }
 
     /**
@@ -176,7 +176,7 @@ public class DbMigrate {
 
             int migrationSuccessCount = 0;
             while (true) {
-                MigrationBatchResult result = new TransactionTemplate(connectionMetaDataTable, false).execute(new TransactionCallback<MigrationBatchResult>() {
+                MigrationBatchResult result = new TransactionTemplate(connectionMetaDataTable, dbSupport.supportsDdlTransactions()).execute(new TransactionCallback<MigrationBatchResult>() {
                     public MigrationBatchResult doInTransaction() {
                         return migrateBatch();
                     }
@@ -291,6 +291,8 @@ public class DbMigrate {
         result.setNumberOfAppliedMigrations(migrationBatchSuccessCount);
         return result;
     }
+
+
 
 
     /**
