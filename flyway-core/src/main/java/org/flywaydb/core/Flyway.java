@@ -299,7 +299,7 @@ public class Flyway implements FlywayConfiguration {
     /**
      * The migration batch service to use
      */
-    private MigrationBatchService migrationBatchService
+    private MigrationBatchService migrationBatchService = new DefaultMigrationBatchService();
 
     /**
      * Creates a new instance of Flyway. This is your starting point.

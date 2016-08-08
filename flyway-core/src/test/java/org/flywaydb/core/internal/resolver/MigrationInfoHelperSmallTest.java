@@ -118,7 +118,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionWithOptional(){
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__optional__Description.sql", "V_", "__", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__optional__Description.sql", "V_", "__", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("8.0", version.toString());
@@ -128,7 +128,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionWithRequired(){
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__required__Description.sql", "V_", "__", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__required__Description.sql", "V_", "__", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("8.0", version.toString());
@@ -138,7 +138,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test(expected = FlywayException.class)
     public void extractSchemaVersionWithIncorrectOptionalToken() {
-        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__toto__Description.sql", "V", "__", ".sql", false);
+        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__toto__Description.sql", "V", "__", ".sql");
     }
 
 }
