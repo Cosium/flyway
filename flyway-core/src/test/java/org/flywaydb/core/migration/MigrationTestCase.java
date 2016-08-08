@@ -42,6 +42,7 @@ import org.flywaydb.core.api.MigrationType;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.batch.MigrationBatchService;
+import org.flywaydb.core.internal.batch.SingleTransactionBatchService;
 import org.flywaydb.core.internal.dbsupport.DbSupport;
 import org.flywaydb.core.internal.dbsupport.DbSupportFactory;
 import org.flywaydb.core.internal.dbsupport.FlywaySqlScriptException;
@@ -655,12 +656,7 @@ public abstract class MigrationTestCase {
     @Test
     public void failedMigrationSingleTransaction() throws Exception {
         flyway.setLocations("migration/failed_transactional");
-        flyway.setMigrationBatchService(new MigrationBatchService() {
-            @Override
-            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationToBeApplied) {
-                return false;
-            }
-        });
+        flyway.setMigrationBatchService(new SingleTransactionBatchService());
 
         try {
             flyway.migrate();
@@ -681,8 +677,8 @@ public abstract class MigrationTestCase {
         flyway.setLocations("migration/failed_transactional");
         flyway.setMigrationBatchService(new MigrationBatchService() {
             @Override
-            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationToBeApplied) {
-                return migrationToBeApplied.getDescription().equals("Populate table");
+            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo lastAppliedMigration, MigrationInfo toBeAppliedMigration) {
+                return toBeAppliedMigration.getDescription().equals("Populate table");
             }
         });
 
