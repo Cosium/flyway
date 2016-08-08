@@ -76,7 +76,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
         if (!config.isSkipDefaultResolvers()) {
             for (Location location : locations.getLocations()) {
                 migrationResolvers.add(new SqlMigrationResolver(dbSupport, scanner, location, resolvedMigrationComparator, placeholderReplacer,
-                        encoding, sqlMigrationPrefix, repeatableSqlMigrationPrefix, sqlMigrationSeparator, sqlMigrationSuffix, config.isAppendDescriptionHashToVersion()));
+                        encoding, sqlMigrationPrefix, repeatableSqlMigrationPrefix, sqlMigrationSeparator, sqlMigrationSuffix));
                 migrationResolvers.add(new JdbcMigrationResolver(scanner, location, config));
 
                 if (new FeatureDetector(scanner.getClassLoader()).isSpringJdbcAvailable()) {

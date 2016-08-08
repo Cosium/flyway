@@ -91,8 +91,6 @@ public class SqlMigrationResolver implements MigrationResolver {
 
     private final Comparator<ResolvedMigration> resolvedMigrationComparator;
 
-    private final boolean appendDescriptionHashToVersion;
-
     /**
      * Creates a new instance.
      * @param dbSupport                    The database-specific support.
@@ -110,8 +108,7 @@ public class SqlMigrationResolver implements MigrationResolver {
                                 Comparator<ResolvedMigration> resolvedMigrationComparator,
                                 PlaceholderReplacer placeholderReplacer, String encoding,
                                 String sqlMigrationPrefix, String repeatableSqlMigrationPrefix,
-                                String sqlMigrationSeparator, String sqlMigrationSuffix,
-                                boolean appendDescriptionHashToVersion) {
+                                String sqlMigrationSeparator, String sqlMigrationSuffix) {
         this.dbSupport = dbSupport;
         this.scanner = scanner;
         this.location = location;
@@ -122,7 +119,6 @@ public class SqlMigrationResolver implements MigrationResolver {
         this.sqlMigrationSeparator = sqlMigrationSeparator;
         this.sqlMigrationSuffix = sqlMigrationSuffix;
         this.resolvedMigrationComparator = resolvedMigrationComparator;
-        this.appendDescriptionHashToVersion = appendDescriptionHashToVersion;
     }
 
     public List<ResolvedMigration> resolveMigrations() {
@@ -142,7 +138,7 @@ public class SqlMigrationResolver implements MigrationResolver {
                 continue;
             }
             Triplet<MigrationVersion, Boolean, String> info =
-                    MigrationInfoHelper.extractVersionAndOptionalAndDescription(filename, prefix, separator, suffix, appendDescriptionHashToVersion);
+                    MigrationInfoHelper.extractVersionAndOptionalAndDescription(filename, prefix, separator, suffix);
 
             ResolvedMigrationImpl migration = new ResolvedMigrationImpl();
             migration.setVersion(info.getLeft());

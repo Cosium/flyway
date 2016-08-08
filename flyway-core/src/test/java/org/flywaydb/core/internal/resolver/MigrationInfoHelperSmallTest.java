@@ -31,12 +31,12 @@ public class MigrationInfoHelperSmallTest {
      */
     @Test(expected = FlywayException.class)
     public void extractSchemaVersionNoDescription() {
-        MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4", "", "__", "", false);
+        MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4", "", "__", "");
     }
 
     @Test
     public void repeatableMigration() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("R__EmailAxel.sql", "R", "__", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("R__EmailAxel.sql", "R", "__", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertNull(version);
@@ -45,7 +45,7 @@ public class MigrationInfoHelperSmallTest {
 
     @Test
     public void extractSchemaVersionDefaults() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4__EmailAxel.sql", "V", "__", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4__EmailAxel.sql", "V", "__", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("9.4", version.toString());
@@ -53,17 +53,8 @@ public class MigrationInfoHelperSmallTest {
     }
 
     @Test
-    public void extractSchemaVersionDefaultsWithDescriptionHash() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4__EmailAxel.sql", "V", "__", ".sql", true);
-        MigrationVersion version = info.getLeft();
-        String description = info.getRight();
-        assertEquals("9.4." +  MigrationInfoHelper.hash("EmailAxel"), version.toString());
-        assertEquals("EmailAxel", description);
-    }
-
-    @Test
     public void extractSchemaVersionCustomSeparator() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4-EmailAxel.sql", "V", "-", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V9_4-EmailAxel.sql", "V", "-", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("9.4", version.toString());
@@ -75,7 +66,7 @@ public class MigrationInfoHelperSmallTest {
      */
     @Test
     public void extractSchemaVersionWithDescription() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4__EmailAxel", "", "__", "", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4__EmailAxel", "", "__", "");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("9.4", version.toString());
@@ -87,7 +78,7 @@ public class MigrationInfoHelperSmallTest {
      */
     @Test
     public void extractSchemaVersionWithDescriptionWithSpaces() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4__Big_jump", "", "__", "", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("9_4__Big_jump", "", "__", "");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("9.4", version.toString());
@@ -99,7 +90,7 @@ public class MigrationInfoHelperSmallTest {
      */
     @Test
     public void extractSchemaVersionWithLeadingZeroes() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("009_4__EmailAxel", "", "__", "", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("009_4__EmailAxel", "", "__", "");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("009.4", version.toString());
@@ -108,17 +99,17 @@ public class MigrationInfoHelperSmallTest {
 
     @Test(expected = FlywayException.class)
     public void extractSchemaVersionWithLeadingUnderscore() {
-        MigrationInfoHelper.extractVersionAndOptionalAndDescription("_8_0__Description", "", "__", "", false);
+        MigrationInfoHelper.extractVersionAndOptionalAndDescription("_8_0__Description", "", "__", "");
     }
 
     @Test(expected = FlywayException.class)
     public void extractSchemaVersionWithLeadingUnderscoreAndPrefix() {
-        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__Description.sql", "V", "__", ".sql", false);
+        MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__Description.sql", "V", "__", ".sql");
     }
 
     @Test
     public void extractSchemaVersionWithVUnderscorePrefix() {
-        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__Description.sql", "V_", "__", ".sql", false);
+        Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription("V_8_0__Description.sql", "V_", "__", ".sql");
         MigrationVersion version = info.getLeft();
         String description = info.getRight();
         assertEquals("8.0", version.toString());

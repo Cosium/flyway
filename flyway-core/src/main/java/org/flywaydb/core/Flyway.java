@@ -297,14 +297,9 @@ public class Flyway implements FlywayConfiguration {
     private Comparator<ResolvedMigration> resolvedMigrationComparator = new ResolvedMigrationComparator();
 
     /**
-     * Whether description hash should be appended to the version
-     */
-    private boolean appendDescriptionHashToVersion;
-
-    /**
      * The migration batch service to use
      */
-    private MigrationBatchService migrationBatchService = new DefaultMigrationBatchService();
+    private MigrationBatchService migrationBatchService
 
     /**
      * Creates a new instance of Flyway. This is your starting point.
@@ -325,15 +320,6 @@ public class Flyway implements FlywayConfiguration {
     @Override
     public Comparator<ResolvedMigration> getResolvedMigrationComparator() {
         return resolvedMigrationComparator;
-    }
-
-    @Override
-    public boolean isAppendDescriptionHashToVersion() {
-        return appendDescriptionHashToVersion;
-    }
-
-    public void setAppendDescriptionHashToVersion(boolean appendDescriptionHashToVersion) {
-        this.appendDescriptionHashToVersion = appendDescriptionHashToVersion;
     }
 
     @Override

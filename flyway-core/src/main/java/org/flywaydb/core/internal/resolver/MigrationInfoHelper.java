@@ -70,17 +70,15 @@ public class MigrationInfoHelper {
     /**
      * Extracts the schema version and the description from a migration name formatted as 1_2__Description.
      *
-     * @param migrationName                     The migration name to parse. Should not contain any folders or packages.
-     * @param prefix                            The migration prefix.
-     * @param separator                         The migration separator.
-     * @param suffix                            The migration suffix.
-     * @param appendDescriptionHashToVersion    Wheter to append description hash to the version
+     * @param migrationName The migration name to parse. Should not contain any folders or packages.
+     * @param prefix        The migration prefix.
+     * @param separator     The migration separator.
+     * @param suffix        The migration suffix.
      * @return The extracted schema version.
      * @throws FlywayException if the migration name does not follow the standard conventions.
      */
     public static Triplet<MigrationVersion, Boolean, String> extractVersionAndOptionalAndDescription(String migrationName,
-                                                                                                     String prefix, String separator, String suffix,
-                                                                                                     boolean appendDescriptionHashToVersion) {
+                                                                                                     String prefix, String separator, String suffix) {
         String quotedPrefix = Pattern.quote(prefix);
         String quotedSeparator = Pattern.quote(separator);
         String quotedSuffix = Pattern.quote(suffix);
@@ -101,13 +99,5 @@ public class MigrationInfoHelper {
         }
         MigrationVersion version = StringUtils.hasText(rawVersion)? MigrationVersion.fromVersion(rawVersion): null;
         return Triplet.of(version, optional, description);
-    }
-
-    static int hash(String text){
-        int hash = 7;
-        for (int i = 0; i < text.length(); i++) {
-            hash = hash*31 + text.charAt(i);
-        }
-        return Math.abs(hash);
     }
 }

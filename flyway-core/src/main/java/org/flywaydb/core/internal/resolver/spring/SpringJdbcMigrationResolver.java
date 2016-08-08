@@ -130,7 +130,7 @@ public class SpringJdbcMigrationResolver implements MigrationResolver {
                         + " => ensure it starts with V or R," +
                         " or implement org.flywaydb.core.api.migration.MigrationInfoProvider for non-default naming");
             }
-            Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription(shortName, prefix, "__", "", configuration.isAppendDescriptionHashToVersion());
+            Triplet<MigrationVersion, Boolean, String> info = MigrationInfoHelper.extractVersionAndOptionalAndDescription(shortName, prefix, "__", "");
             version = info.getLeft();
             optional = info.getCenter();
             description = info.getRight();

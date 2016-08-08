@@ -78,7 +78,7 @@ public class DB2zOSMigrationMediumTest extends MigrationTestCase {
                 new ResolvedMigrationComparator(),
                 PlaceholderReplacer.NO_PLACEHOLDERS,
                 "UTF-8",
-                "V", "R", "__", ".sql", false);
+                "V", "R", "__", ".sql");
         List<ResolvedMigration> migrations = sqlMigrationResolver.resolveMigrations();
         for (ResolvedMigration migration : migrations) {
             if (migration.getVersion().toString().equals(migrationInfo.getVersion().toString())) {

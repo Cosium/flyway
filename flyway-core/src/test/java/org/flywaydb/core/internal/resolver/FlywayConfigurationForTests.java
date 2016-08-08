@@ -184,11 +184,6 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     }
 
     @Override
-    public boolean isAppendDescriptionHashToVersion() {
-        return false;
-    }
-
-    @Override
     public MigrationBatchService getMigrationBatchService() {
         return new DefaultMigrationBatchService();
     }
