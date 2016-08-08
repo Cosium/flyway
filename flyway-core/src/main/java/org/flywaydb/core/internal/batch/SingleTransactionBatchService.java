@@ -25,7 +25,7 @@ import org.flywaydb.core.internal.dbsupport.DbSupport;
  */
 public class SingleTransactionBatchService implements MigrationBatchService {
     @Override
-    public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationInfo) {
+    public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo lastAppliedMigration, MigrationInfo toBeAppliedMigration) {
         return false;
     }
 }

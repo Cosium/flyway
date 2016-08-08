@@ -221,6 +221,7 @@ public class DbMigrate {
             @Override
             public Integer doInTransaction() throws SQLException {
                 int migrationBatchSuccessCount = 0;
+                MigrationInfo lastAppliedMigration = null;
                 while(true){
                     MigrationInfoServiceImpl infoService =
                             new MigrationInfoServiceImpl(migrationResolver, metaDataTable, target, outOfOrder, true, true);
@@ -277,9 +278,11 @@ public class DbMigrate {
                     boolean isOutOfOrder = pendingMigrations[0].getVersion() != null
                             && pendingMigrations[0].getVersion().compareTo(currentSchemaVersion) < 0;
                     MigrationInfoImpl migrationInfo = pendingMigrations[0];
+                    boolean isLastOfBatch = migrationBatchService.isLastOfBatch(dbSupport, lastAppliedMigration, migrationInfo);
                     applyMigration(migrationInfo, isOutOfOrder);
+                    lastAppliedMigration = migrationInfo;
                     migrationBatchSuccessCount++;
-                    if(migrationBatchService.isLastOfBatch(dbSupport, migrationInfo)){
+                    if(isLastOfBatch){
                         result.setDone(false);
                         break;
                     }
