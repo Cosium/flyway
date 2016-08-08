@@ -27,10 +27,11 @@ public interface MigrationBatchService {
 
     /**
      * @param dbSupport
-     * @param migrationInfo
-     * @return True if the migration is to be considered as the last of its batch.<br>
+     * @param lastAppliedMigration Last applied migration of the batch. Null if the toBeAppliedMigration is the first of its batch.
+     * @param toBeAppliedMigration To be applied migration
+     * @return True if the to be applied migration is to be considered as the last of its batch.<br>
      *      A migration marked as last of batch will be followed by a commit on success.
      */
-    boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationInfo);
+    boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo lastAppliedMigration, MigrationInfo toBeAppliedMigration);
 
 }

@@ -657,7 +657,7 @@ public abstract class MigrationTestCase {
         flyway.setLocations("migration/failed_transactional");
         flyway.setMigrationBatchService(new MigrationBatchService() {
             @Override
-            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationInfo) {
+            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationToBeApplied) {
                 return false;
             }
         });
@@ -681,8 +681,8 @@ public abstract class MigrationTestCase {
         flyway.setLocations("migration/failed_transactional");
         flyway.setMigrationBatchService(new MigrationBatchService() {
             @Override
-            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationInfo) {
-                return migrationInfo.getDescription().equals("Populate table");
+            public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo migrationToBeApplied) {
+                return migrationToBeApplied.getDescription().equals("Populate table");
             }
         });
 
