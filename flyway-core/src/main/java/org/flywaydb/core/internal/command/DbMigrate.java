@@ -181,11 +181,11 @@ public class DbMigrate {
                         return migrateBatch();
                     }
                 });
+                migrationSuccessCount += result.getNumberOfAppliedMigrations();
                 if (result.isDone()) {
                     // No further migrations available
                     break;
                 }
-                migrationSuccessCount += result.getNumberOfAppliedMigrations();
             }
 
             stopWatch.stop();
@@ -221,7 +221,6 @@ public class DbMigrate {
             @Override
             public Integer doInTransaction() throws SQLException {
                 int migrationBatchSuccessCount = 0;
-                MigrationInfo lastAppliedMigration = null;
                 while(true){
                     MigrationInfoServiceImpl infoService =
                             new MigrationInfoServiceImpl(migrationResolver, metaDataTable, target, outOfOrder, true, true);
@@ -278,11 +277,9 @@ public class DbMigrate {
                     boolean isOutOfOrder = pendingMigrations[0].getVersion() != null
                             && pendingMigrations[0].getVersion().compareTo(currentSchemaVersion) < 0;
                     MigrationInfoImpl migrationInfo = pendingMigrations[0];
-                    boolean isLastOfBatch = migrationBatchService.isLastOfBatch(dbSupport, lastAppliedMigration, migrationInfo);
                     applyMigration(migrationInfo, isOutOfOrder);
-                    lastAppliedMigration = migrationInfo;
                     migrationBatchSuccessCount++;
-                    if(isLastOfBatch){
+                    if(pendingMigrations.length > 1 && migrationBatchService.isLastOfBatch(dbSupport, migrationInfo, pendingMigrations[1])){
                         result.setDone(false);
                         break;
                     }

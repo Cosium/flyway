@@ -689,7 +689,7 @@ public abstract class MigrationTestCase {
         flyway.setMigrationBatchService(new MigrationBatchService() {
             @Override
             public boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo lastAppliedMigration, MigrationInfo toBeAppliedMigration) {
-                return toBeAppliedMigration.getDescription().equals("Populate table");
+                return toBeAppliedMigration.getDescription().equals("Should Fail");
             }
         });
 
