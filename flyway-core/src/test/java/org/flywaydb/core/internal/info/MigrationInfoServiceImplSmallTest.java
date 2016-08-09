@@ -44,6 +44,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1), createResolvedMigration(2)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(), MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
 
@@ -57,6 +58,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1), createResolvedMigration(2)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1), createAppliedMigration(2)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -71,6 +73,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1, "xyz")),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -86,6 +89,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1), createResolvedMigration(2)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -100,6 +104,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1), createResolvedMigration(2)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(2)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -115,6 +120,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1), createResolvedMigration(2), createResolvedMigration(3)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1), createAppliedMigration(3)),
                         MigrationVersion.LATEST, true, true, true);
         migrationInfoService.refresh();
@@ -133,6 +139,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1), createAppliedMigration(2)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -149,6 +156,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedBaselineMigration(2)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -164,6 +172,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(2)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedMigration(1), createAppliedMigration(2)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();
@@ -179,6 +188,7 @@ public class MigrationInfoServiceImplSmallTest {
         MigrationInfoServiceImpl migrationInfoService =
                 new MigrationInfoServiceImpl(
                         createMigrationResolver(createResolvedMigration(1)),
+                        new MigrationInfoComparator(),
                         createMetaDataTable(createAppliedSchemaMigration(), createAppliedMigration(1)),
                         MigrationVersion.LATEST, false, true, true);
         migrationInfoService.refresh();

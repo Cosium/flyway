@@ -36,6 +36,7 @@ import org.flywaydb.core.internal.util.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 
 /**
  * Handles Flyway's repair command.
@@ -78,18 +79,19 @@ public class DbRepair {
     /**
      * Creates a new DbRepair.
      *
-     * @param dbSupport         The database-specific support.
-     * @param connection        The database connection to use for accessing the metadata table.
-     * @param schema            The database schema to use by default.
-     * @param migrationResolver The migration resolver.
-     * @param metaDataTable     The metadata table.
-     * @param callbacks         Callbacks for the Flyway lifecycle.
+     * @param dbSupport                 The database-specific support.
+     * @param connection                The database connection to use for accessing the metadata table.
+     * @param schema                    The database schema to use by default.
+     * @param migrationResolver         The migration resolver.
+     * @param migrationInfoComparator   The migration info comparator.
+     * @param metaDataTable             The metadata table.
+     * @param callbacks                 Callbacks for the Flyway lifecycle.
      */
-    public DbRepair(DbSupport dbSupport, Connection connection, Schema schema, MigrationResolver migrationResolver, MetaDataTable metaDataTable, FlywayCallback[] callbacks) {
+    public DbRepair(DbSupport dbSupport, Connection connection, Schema schema, MigrationResolver migrationResolver, Comparator<MigrationInfo> migrationInfoComparator, MetaDataTable metaDataTable, FlywayCallback[] callbacks) {
         this.dbSupport = dbSupport;
         this.connection = connection;
         this.schema = schema;
-        this.migrationInfoService = new MigrationInfoServiceImpl(migrationResolver, metaDataTable, MigrationVersion.LATEST, true, true, true);
+        this.migrationInfoService = new MigrationInfoServiceImpl(migrationResolver, migrationInfoComparator, metaDataTable, MigrationVersion.LATEST, true, true, true);
         this.metaDataTable = metaDataTable;
         this.callbacks = callbacks;
     }

@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.api.configuration;
 
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.resolver.MigrationResolver;
@@ -209,8 +210,13 @@ public interface FlywayConfiguration {
     String[] getLocations();
 
     /**
-     *
      * @return The resolved migration comparator
      */
     Comparator<ResolvedMigration> getResolvedMigrationComparator();
+
+    /**
+     *
+     * @return The migration info comparator
+     */
+    Comparator<MigrationInfo> getMigrationInfoComparator();
 }
