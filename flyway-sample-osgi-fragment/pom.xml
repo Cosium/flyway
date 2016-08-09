@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-parent</artifactId>
-        <version>4.0.3.cos-fork.4</version>
+        <version>4.0.3.cos-fork.5-SNAPSHOT</version>
     </parent>
     <artifactId>flyway-sample-osgi-fragment</artifactId>
     <packaging>jar</packaging>
