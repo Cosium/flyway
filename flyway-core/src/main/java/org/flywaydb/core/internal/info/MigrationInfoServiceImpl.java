@@ -27,14 +27,7 @@ import org.flywaydb.core.internal.metadatatable.MetaDataTable;
 import org.flywaydb.core.internal.util.ObjectUtils;
 import org.flywaydb.core.internal.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Default implementation of MigrationInfoService.
@@ -44,6 +37,8 @@ public class MigrationInfoServiceImpl implements MigrationInfoService {
      * The migration resolver for available migrations.
      */
     private final MigrationResolver migrationResolver;
+
+    private final Comparator<MigrationInfo> migrationInfoComparator;
 
     /**
      * The metadata table for applied migrations.
@@ -82,15 +77,17 @@ public class MigrationInfoServiceImpl implements MigrationInfoService {
      * Creates a new MigrationInfoServiceImpl.
      *
      * @param migrationResolver The migration resolver for available migrations.
+     * @param migrationInfoComparator
      * @param metaDataTable     The metadata table for applied migrations.
      * @param target            The target version up to which to retrieve the info.
      * @param outOfOrder        Allows migrations to be run "out of order".
      * @param pending           Whether pending migrations are allowed.
      * @param future            Whether future migrations are allowed.
      */
-    public MigrationInfoServiceImpl(MigrationResolver migrationResolver, MetaDataTable metaDataTable,
+    public MigrationInfoServiceImpl(MigrationResolver migrationResolver, Comparator<MigrationInfo> migrationInfoComparator, MetaDataTable metaDataTable,
                                     MigrationVersion target, boolean outOfOrder, boolean pending, boolean future) {
         this.migrationResolver = migrationResolver;
+        this.migrationInfoComparator = migrationInfoComparator;
         this.metaDataTable = metaDataTable;
         this.target = target;
         this.outOfOrder = outOfOrder;
@@ -203,7 +200,7 @@ public class MigrationInfoServiceImpl implements MigrationInfoService {
             migrationInfos.add(new MigrationInfoImpl(pendingResolvedRepeatableMigration, null, context, false));
         }
 
-        Collections.sort(migrationInfos);
+        Collections.sort(migrationInfos, migrationInfoComparator);
 
         return migrationInfos;
     }

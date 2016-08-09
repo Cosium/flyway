@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * Info about a migration.
  */
-public interface MigrationInfo extends Comparable<MigrationInfo> {
+public interface MigrationInfo {
     /**
      * @return The type of migration (BASELINE, SQL, JDBC, ...)
      */

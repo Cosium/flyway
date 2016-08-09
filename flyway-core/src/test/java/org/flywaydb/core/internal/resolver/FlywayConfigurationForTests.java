@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.configuration.FlywayConfiguration;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
@@ -27,6 +28,7 @@ import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.batch.DefaultMigrationBatchService;
 import org.flywaydb.core.internal.batch.MigrationBatchService;
+import org.flywaydb.core.internal.info.MigrationInfoComparator;
 
 /**
  * Dummy Implementation of {@link FlywayConfiguration} for unit tests.
@@ -44,6 +46,7 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     private boolean skipDefaultResolvers;
     private boolean skipDefaultCallbacks;
     private Comparator<ResolvedMigration> resolvedMigrationComparator = new ResolvedMigrationComparator();
+    private Comparator<MigrationInfo> migrationInfoComparator = new MigrationInfoComparator();
 
     public FlywayConfigurationForTests(ClassLoader contextClassLoader, String[] locations, String encoding,
             String sqlMigrationPrefix, String repeatableSqlMigrationPrefix, String sqlMigrationSeparator, String sqlMigrationSuffix,
@@ -186,6 +189,11 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     @Override
     public MigrationBatchService getMigrationBatchService() {
         return new DefaultMigrationBatchService();
+    }
+
+    @Override
+    public Comparator<MigrationInfo> getMigrationInfoComparator() {
+        return migrationInfoComparator;
     }
 
     @Override

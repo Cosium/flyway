@@ -283,41 +283,6 @@ public class MigrationInfoImpl implements MigrationInfo {
                 migrationIdentifier, applied, resolved);
     }
 
-    @SuppressWarnings("NullableProblems")
-    public int compareTo(MigrationInfo o) {
-        if ((getInstalledRank() != null) && (o.getInstalledRank() != null)) {
-            return getInstalledRank() - o.getInstalledRank();
-        }
-
-        MigrationState state = getState();
-        MigrationState oState = o.getState();
-
-        if (((getInstalledRank() != null) || (o.getInstalledRank() != null))
-                && (!(state == MigrationState.BELOW_BASELINE || oState == MigrationState.BELOW_BASELINE
-                || state == MigrationState.IGNORED || oState == MigrationState.IGNORED))) {
-            if (getInstalledRank() != null) {
-                return Integer.MIN_VALUE;
-            }
-            if (o.getInstalledRank() != null) {
-                return Integer.MAX_VALUE;
-            }
-        }
-
-        if (getVersion() != null && o.getVersion() != null) {
-            return getVersion().compareTo(o.getVersion());
-        }
-
-        // Versioned pending migrations go before repeatable ones
-        if (getVersion() != null) {
-            return Integer.MIN_VALUE;
-        }
-        if (o.getVersion() != null) {
-            return Integer.MAX_VALUE;
-        }
-
-        return getDescription().compareTo(o.getDescription());
-    }
-
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {

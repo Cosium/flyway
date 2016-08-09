@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.internal.command;
 
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.resolver.MigrationResolver;
@@ -32,6 +33,7 @@ import org.flywaydb.core.internal.util.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 
 /**
  * Handles the validate command.
@@ -60,6 +62,11 @@ public class DbValidate {
      * The migration resolver.
      */
     private final MigrationResolver migrationResolver;
+
+    /**
+     * The migration info comparator
+     */
+    private final Comparator<MigrationInfo> migrationInfoComparator;
 
     /**
      * The connection to use.
@@ -99,25 +106,27 @@ public class DbValidate {
     /**
      * Creates a new database validator.
      *
-     * @param connection        The connection to use.
-     * @param dbSupport         The DB support for the connection.
-     * @param metaDataTable     The database metadata table.
-     * @param schema            The database schema to use by default.
-     * @param migrationResolver The migration resolver.
-     * @param target            The target version of the migration.
-     * @param outOfOrder        Allows migrations to be run "out of order".
-     * @param pending           Whether pending migrations are allowed.
-     * @param future            Whether future migrations are allowed.
-     * @param callbacks         The lifecycle callbacks.
+     * @param connection                The connection to use.
+     * @param dbSupport                 The DB support for the connection.
+     * @param metaDataTable             The database metadata table.
+     * @param schema                    The database schema to use by default.
+     * @param migrationResolver         The migration resolver.
+     * @param migrationInfoComparator   The migration info comparator.
+     * @param target                    The target version of the migration.
+     * @param outOfOrder                Allows migrations to be run "out of order".
+     * @param pending                   Whether pending migrations are allowed.
+     * @param future                    Whether future migrations are allowed.
+     * @param callbacks                 The lifecycle callbacks.
      */
     public DbValidate(Connection connection,
-                      DbSupport dbSupport, MetaDataTable metaDataTable, Schema schema, MigrationResolver migrationResolver,
+                      DbSupport dbSupport, MetaDataTable metaDataTable, Schema schema, MigrationResolver migrationResolver, Comparator<MigrationInfo> migrationInfoComparator,
                       MigrationVersion target, boolean outOfOrder, boolean pending, boolean future, FlywayCallback[] callbacks) {
         this.connection = connection;
         this.dbSupport = dbSupport;
         this.metaDataTable = metaDataTable;
         this.schema = schema;
         this.migrationResolver = migrationResolver;
+        this.migrationInfoComparator = migrationInfoComparator;
         this.target = target;
         this.outOfOrder = outOfOrder;
         this.pending = pending;
@@ -151,7 +160,7 @@ public class DbValidate {
                 public Pair<Integer, String> doInTransaction() {
                     dbSupport.changeCurrentSchemaTo(schema);
                     MigrationInfoServiceImpl migrationInfoService =
-                            new MigrationInfoServiceImpl(migrationResolver, metaDataTable, target, outOfOrder, pending, future);
+                            new MigrationInfoServiceImpl(migrationResolver, migrationInfoComparator, metaDataTable, target, outOfOrder, pending, future);
 
                     migrationInfoService.refresh();
 

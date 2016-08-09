@@ -17,6 +17,7 @@ package org.flywaydb.core;
 
 
 import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationInfoService;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
@@ -35,6 +36,7 @@ import org.flywaydb.core.internal.command.DbValidate;
 import org.flywaydb.core.internal.dbsupport.DbSupport;
 import org.flywaydb.core.internal.dbsupport.DbSupportFactory;
 import org.flywaydb.core.internal.dbsupport.Schema;
+import org.flywaydb.core.internal.info.MigrationInfoComparator;
 import org.flywaydb.core.internal.info.MigrationInfoServiceImpl;
 import org.flywaydb.core.internal.metadatatable.MetaDataTable;
 import org.flywaydb.core.internal.metadatatable.MetaDataTableImpl;
@@ -301,6 +303,8 @@ public class Flyway implements FlywayConfiguration {
      */
     private MigrationBatchService migrationBatchService = new DefaultMigrationBatchService();
 
+    private Comparator<MigrationInfo> migrationInfoComparator = new MigrationInfoComparator();
+
     /**
      * Creates a new instance of Flyway. This is your starting point.
      */
@@ -325,6 +329,11 @@ public class Flyway implements FlywayConfiguration {
     @Override
     public MigrationBatchService getMigrationBatchService() {
         return migrationBatchService;
+    }
+
+    @Override
+    public Comparator<MigrationInfo> getMigrationInfoComparator() {
+        return migrationInfoComparator;
     }
 
     @Override
@@ -985,7 +994,7 @@ public class Flyway implements FlywayConfiguration {
 
                 DbMigrate dbMigrate =
                         new DbMigrate(migrationBatchService, connectionMetaDataTable, connectionUserObjects, dbSupport, metaDataTable,
-                                schemas[0], migrationResolver, target, ignoreFutureMigrations, ignoreFailedFutureMigration, outOfOrder, flywayCallbacks);
+                                schemas[0], migrationResolver, migrationInfoComparator, target, ignoreFutureMigrations, ignoreFailedFutureMigration, outOfOrder, flywayCallbacks);
                 return dbMigrate.migrate();
             }
         });
@@ -1028,7 +1037,7 @@ public class Flyway implements FlywayConfiguration {
     private void doValidate(Connection connectionMetaDataTable, DbSupport dbSupport, MigrationResolver migrationResolver,
                             MetaDataTable metaDataTable, Schema[] schemas, FlywayCallback[] flywayCallbacks, boolean pending) {
         String validationError =
-                new DbValidate(connectionMetaDataTable, dbSupport, metaDataTable, schemas[0], migrationResolver,
+                new DbValidate(connectionMetaDataTable, dbSupport, metaDataTable, schemas[0], migrationResolver, migrationInfoComparator,
                         target, outOfOrder, pending, ignoreFutureMigrations, flywayCallbacks).validate();
 
         if (validationError != null) {
@@ -1083,7 +1092,7 @@ public class Flyway implements FlywayConfiguration {
                     }
 
                     MigrationInfoServiceImpl migrationInfoService =
-                            new MigrationInfoServiceImpl(migrationResolver, metaDataTable, target, outOfOrder, true, true);
+                            new MigrationInfoServiceImpl(migrationResolver, migrationInfoComparator, metaDataTable, target, outOfOrder, true, true);
                     migrationInfoService.refresh();
 
                     for (final FlywayCallback callback : flywayCallbacks) {
@@ -1135,7 +1144,7 @@ public class Flyway implements FlywayConfiguration {
     public void repair() throws FlywayException {
         execute(new Command<Void>() {
             public Void execute(Connection connectionMetaDataTable, Connection connectionUserObjects, MigrationResolver migrationResolver, MetaDataTable metaDataTable, DbSupport dbSupport, Schema[] schemas, FlywayCallback[] flywayCallbacks) {
-                new DbRepair(dbSupport, connectionMetaDataTable, schemas[0], migrationResolver, metaDataTable, flywayCallbacks).repair();
+                new DbRepair(dbSupport, connectionMetaDataTable, schemas[0], migrationResolver, migrationInfoComparator, metaDataTable, flywayCallbacks).repair();
                 return null;
             }
         });
@@ -1396,7 +1405,7 @@ public class Flyway implements FlywayConfiguration {
             FlywayCallback[] flywayCallbacksArray = flywayCallbacks.toArray(new FlywayCallback[flywayCallbacks.size()]);
             MetaDataTable metaDataTable = new MetaDataTableImpl(dbSupport, schemas[0].getTable(table));
             if (metaDataTable.upgradeIfNecessary()) {
-                new DbRepair(dbSupport, connectionMetaDataTable, schemas[0], migrationResolver, metaDataTable, flywayCallbacksArray).repairChecksums();
+                new DbRepair(dbSupport, connectionMetaDataTable, schemas[0], migrationResolver, migrationInfoComparator, metaDataTable, flywayCallbacksArray).repairChecksums();
                 LOG.info("Metadata table " + table + " successfully upgraded to the Flyway 4.0 format.");
             }
 

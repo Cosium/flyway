@@ -40,6 +40,7 @@ import org.flywaydb.core.internal.util.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 
 /**
  * Main workflow for migrating the database.
@@ -76,6 +77,8 @@ public class DbMigrate {
      * The migration resolver.
      */
     private final MigrationResolver migrationResolver;
+
+    private final Comparator<MigrationInfo> migrationInfoComparator;
 
     /**
      * The connection to use.
@@ -133,7 +136,7 @@ public class DbMigrate {
      */
     public DbMigrate(MigrationBatchService migrationBatchService,
                      Connection connectionMetaDataTable, Connection connectionUserObjects, DbSupport dbSupport,
-                     MetaDataTable metaDataTable, Schema schema, MigrationResolver migrationResolver,
+                     MetaDataTable metaDataTable, Schema schema, MigrationResolver migrationResolver, Comparator<MigrationInfo> migrationInfoComparator,
                      MigrationVersion target, boolean ignoreFutureMigrations, boolean ignoreFailedFutureMigration, boolean outOfOrder,
                      FlywayCallback[] callbacks) {
         this.migrationBatchService = migrationBatchService;
@@ -143,6 +146,7 @@ public class DbMigrate {
         this.metaDataTable = metaDataTable;
         this.schema = schema;
         this.migrationResolver = migrationResolver;
+        this.migrationInfoComparator = migrationInfoComparator;
         this.target = target;
         this.ignoreFutureMigrations = ignoreFutureMigrations;
         this.ignoreFailedFutureMigration = ignoreFailedFutureMigration;
@@ -223,7 +227,7 @@ public class DbMigrate {
                 int migrationBatchSuccessCount = 0;
                 while(true){
                     MigrationInfoServiceImpl infoService =
-                            new MigrationInfoServiceImpl(migrationResolver, metaDataTable, target, outOfOrder, true, true);
+                            new MigrationInfoServiceImpl(migrationResolver, migrationInfoComparator, metaDataTable, target, outOfOrder, true, true);
                     infoService.refresh();
 
                     MigrationVersion currentSchemaVersion = MigrationVersion.EMPTY;

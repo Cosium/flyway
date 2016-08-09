@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.internal.info;
 
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationType;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
@@ -23,6 +24,7 @@ import org.flywaydb.core.internal.metadatatable.AppliedMigration;
 import org.flywaydb.core.internal.resolver.ResolvedMigrationImpl;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import static org.junit.Assert.assertTrue;
@@ -79,47 +81,49 @@ public class MigrationInfoImplSmallTest {
         MigrationInfoImpl r6 = new MigrationInfoImpl(b, null, context, false);
         MigrationInfoImpl v5 = new MigrationInfoImpl(createResolvedMigration("6", "V2"), null, context, false);
 
-        assertTrue(r1.compareTo(r1) == 0);
-        assertTrue(r1.compareTo(v2) < 0);
-        assertTrue(r1.compareTo(r3) < 0);
-        assertTrue(r1.compareTo(r4) < 0);
-        assertTrue(r1.compareTo(v5) < 0);
-        assertTrue(r1.compareTo(r6) < 0);
+        Comparator<MigrationInfo> migrationInfoComparator = new MigrationInfoComparator();
 
-        assertTrue(v2.compareTo(r1) > 0);
-        assertTrue(v2.compareTo(v2) == 0);
-        assertTrue(v2.compareTo(r3) < 0);
-        assertTrue(v2.compareTo(r4) < 0);
-        assertTrue(v2.compareTo(v5) < 0);
-        assertTrue(v2.compareTo(r6) < 0);
+        assertTrue(migrationInfoComparator.compare(r1,r1) == 0);
+        assertTrue(migrationInfoComparator.compare(r1,v2) < 0);
+        assertTrue(migrationInfoComparator.compare(r1,r3) < 0);
+        assertTrue(migrationInfoComparator.compare(r1,r4) < 0);
+        assertTrue(migrationInfoComparator.compare(r1,v5) < 0);
+        assertTrue(migrationInfoComparator.compare(r1,r6) < 0);
 
-        assertTrue(r3.compareTo(r1) > 0);
-        assertTrue(r3.compareTo(v2) > 0);
-        assertTrue(r3.compareTo(r3) == 0);
-        assertTrue(r3.compareTo(r4) < 0);
-        assertTrue(r3.compareTo(v5) < 0);
-        assertTrue(r3.compareTo(r6) < 0);
+        assertTrue(migrationInfoComparator.compare(v2,r1) > 0);
+        assertTrue(migrationInfoComparator.compare(v2,v2) == 0);
+        assertTrue(migrationInfoComparator.compare(v2,r3) < 0);
+        assertTrue(migrationInfoComparator.compare(v2,r4) < 0);
+        assertTrue(migrationInfoComparator.compare(v2,v5) < 0);
+        assertTrue(migrationInfoComparator.compare(v2,r6) < 0);
 
-        assertTrue(r4.compareTo(r1) > 0);
-        assertTrue(r4.compareTo(v2) > 0);
-        assertTrue(r4.compareTo(r3) > 0);
-        assertTrue(r4.compareTo(r4) == 0);
-        assertTrue(r4.compareTo(v5) < 0);
-        assertTrue(r4.compareTo(r6) < 0);
+        assertTrue(migrationInfoComparator.compare(r3,r1) > 0);
+        assertTrue(migrationInfoComparator.compare(r3,v2) > 0);
+        assertTrue(migrationInfoComparator.compare(r3,r3) == 0);
+        assertTrue(migrationInfoComparator.compare(r3,r4) < 0);
+        assertTrue(migrationInfoComparator.compare(r3,v5) < 0);
+        assertTrue(migrationInfoComparator.compare(r3,r6) < 0);
 
-        assertTrue(v5.compareTo(r1) > 0);
-        assertTrue(v5.compareTo(v2) > 0);
-        assertTrue(v5.compareTo(r3) > 0);
-        assertTrue(v5.compareTo(r4) > 0);
-        assertTrue(v5.compareTo(v5) == 0);
-        assertTrue(v5.compareTo(r6) < 0);
+        assertTrue(migrationInfoComparator.compare(r4,r1) > 0);
+        assertTrue(migrationInfoComparator.compare(r4,v2) > 0);
+        assertTrue(migrationInfoComparator.compare(r4,r3) > 0);
+        assertTrue(migrationInfoComparator.compare(r4,r4) == 0);
+        assertTrue(migrationInfoComparator.compare(r4,v5) < 0);
+        assertTrue(migrationInfoComparator.compare(r4,r6) < 0);
 
-        assertTrue(r6.compareTo(r1) > 0);
-        assertTrue(r6.compareTo(v2) > 0);
-        assertTrue(r6.compareTo(r3) > 0);
-        assertTrue(r6.compareTo(r4) > 0);
-        assertTrue(r6.compareTo(v5) > 0);
-        assertTrue(r6.compareTo(r6) == 0);
+        assertTrue(migrationInfoComparator.compare(v5,r1) > 0);
+        assertTrue(migrationInfoComparator.compare(v5,v2) > 0);
+        assertTrue(migrationInfoComparator.compare(v5,r3) > 0);
+        assertTrue(migrationInfoComparator.compare(v5,r4) > 0);
+        assertTrue(migrationInfoComparator.compare(v5,v5) == 0);
+        assertTrue(migrationInfoComparator.compare(v5,r6) < 0);
+
+        assertTrue(migrationInfoComparator.compare(r6,r1) > 0);
+        assertTrue(migrationInfoComparator.compare(r6,v2) > 0);
+        assertTrue(migrationInfoComparator.compare(r6,r3) > 0);
+        assertTrue(migrationInfoComparator.compare(r6,r4) > 0);
+        assertTrue(migrationInfoComparator.compare(r6,v5) > 0);
+        assertTrue(migrationInfoComparator.compare(r6,r6) == 0);
     }
 
     /**
