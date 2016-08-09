@@ -809,6 +809,13 @@ public class Flyway implements FlywayConfiguration {
     }
 
     /**
+     * @param migrationInfoComparator The migration info comparator
+     */
+    public void setMigrationInfoComparator(Comparator<MigrationInfo> migrationInfoComparator) {
+        this.migrationInfoComparator = migrationInfoComparator;
+    }
+
+    /**
      * Sets the version to tag an existing schema with when executing baseline.
      *
      * @param baselineVersion The version to tag an existing schema with when executing baseline. (default: 1)
