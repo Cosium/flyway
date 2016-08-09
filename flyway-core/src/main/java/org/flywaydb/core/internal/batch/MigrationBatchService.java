@@ -26,11 +26,12 @@ import org.flywaydb.core.internal.dbsupport.DbSupport;
 public interface MigrationBatchService {
 
     /**
+     * Whether to perform a commit between the last applied migration and the to be applied migration.
      * @param dbSupport
-     * @param lastAppliedMigration Last applied migration of the batch. Null if the toBeAppliedMigration is the first of its batch.
+     * @param lastAppliedMigration Last applied migration of the batch
      * @param toBeAppliedMigration To be applied migration
-     * @return True if the to be applied migration is to be considered as the last of its batch.<br>
-     *      A migration marked as last of batch will be followed by a commit on success.
+     * @return True if the lastAppliedMigration is to be considered as the last of its batch.<br>
+     *      If this method return true, it will be followed by a commit
      */
     boolean isLastOfBatch(DbSupport dbSupport, MigrationInfo lastAppliedMigration, MigrationInfo toBeAppliedMigration);
 
