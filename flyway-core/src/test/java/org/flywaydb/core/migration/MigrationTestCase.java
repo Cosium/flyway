@@ -40,6 +40,7 @@ import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.migration.sql.SqlMigrationErrorHandler;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.dbsupport.DbSupport;
 import org.flywaydb.core.internal.dbsupport.DbSupportFactory;
@@ -47,6 +48,7 @@ import org.flywaydb.core.internal.dbsupport.FlywaySqlScriptException;
 import org.flywaydb.core.internal.dbsupport.JdbcTemplate;
 import org.flywaydb.core.internal.dbsupport.Schema;
 import org.flywaydb.core.internal.info.MigrationInfoDumper;
+import org.flywaydb.core.internal.migration.sql.AlwaysFailSqlMigrationErrorHandler;
 import org.flywaydb.core.internal.resolver.sql.SqlMigrationResolver;
 import org.flywaydb.core.internal.util.Location;
 import org.flywaydb.core.internal.util.PlaceholderReplacer;
@@ -285,7 +287,7 @@ public abstract class MigrationTestCase {
                 new Location(getBasedir()),
                 PlaceholderReplacer.NO_PLACEHOLDERS,
                 "UTF-8",
-                "V", "R", "__", ".sql");
+                "V", "R", "__", ".sql", new AlwaysFailSqlMigrationErrorHandler());
         List<ResolvedMigration> migrations = sqlMigrationResolver.resolveMigrations();
         for (ResolvedMigration migration : migrations) {
             if (migration.getVersion().toString().equals(migrationInfo.getVersion().toString())) {
@@ -373,6 +375,26 @@ public abstract class MigrationTestCase {
             }
 
         }
+    }
+
+    @Test
+    public void errorCatchedMigration() throws Exception {
+        String tableName = "before_the_error";
+
+        flyway.setLocations(getMigrationDir() + "/failed");
+        Map<String, String> placeholders = new HashMap<String, String>();
+        placeholders.put("tableName", dbSupport.quote(tableName));
+        flyway.setPlaceholders(placeholders);
+        flyway.setSqlMigrationErrorHandler(new SqlMigrationErrorHandler() {
+            @Override
+            public boolean shouldFail(String sqlStatement, SQLException e) {
+                return !sqlStatement.contains("THIS IS NOT VALID SQL")
+                        && !sqlStatement.contains("THIS MIGRATION SHOULD FAIL");
+            }
+        });
+
+        int result = flyway.migrate();
+        assertEquals(1, result);
     }
 
     @Test

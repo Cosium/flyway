@@ -16,6 +16,7 @@
 package org.flywaydb.core.internal.dbsupport;
 
 import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.api.migration.sql.SqlMigrationErrorHandler;
 import org.flywaydb.core.internal.util.PlaceholderReplacer;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.flywaydb.core.internal.util.logging.Log;
@@ -53,6 +54,11 @@ public class SqlScript {
     private final Resource resource;
 
     /**
+     * The sql migration error handler
+     */
+    private final SqlMigrationErrorHandler sqlMigrationErrorHandler;
+
+    /**
      * Creates a new sql script from this source.
      *
      * @param sqlScriptSource The sql script as a text block with all placeholders already replaced.
@@ -62,6 +68,7 @@ public class SqlScript {
         this.dbSupport = dbSupport;
         this.sqlStatements = parse(sqlScriptSource);
         this.resource = null;
+        this.sqlMigrationErrorHandler = null;
     }
 
     /**
@@ -72,13 +79,14 @@ public class SqlScript {
      * @param placeholderReplacer The placeholder replacer.
      * @param encoding            The encoding to use.
      */
-    public SqlScript(DbSupport dbSupport, Resource sqlScriptResource, PlaceholderReplacer placeholderReplacer, String encoding) {
+    public SqlScript(DbSupport dbSupport, Resource sqlScriptResource, PlaceholderReplacer placeholderReplacer, String encoding, SqlMigrationErrorHandler sqlMigrationErrorHandler) {
         this.dbSupport = dbSupport;
 
         String sqlScriptSource = sqlScriptResource.loadAsString(encoding);
         this.sqlStatements = parse(placeholderReplacer.replacePlaceholders(sqlScriptSource));
 
         this.resource = sqlScriptResource;
+        this.sqlMigrationErrorHandler = sqlMigrationErrorHandler;
     }
 
     /**
@@ -114,6 +122,11 @@ public class SqlScript {
                     jdbcTemplate.executeStatement(sql);
                 }
             } catch (SQLException e) {
+                if(sqlMigrationErrorHandler != null && !sqlMigrationErrorHandler.shouldFail(sqlStatement.getSql(), e)) {
+                    LOG.info("Ignoring error '" + e.getMessage() + "' on statement '" + sqlStatement.getSql()
+                            + "' as requested.");
+                    continue;
+                }
                 throw new FlywaySqlScriptException(resource, sqlStatement, e);
             }
         }

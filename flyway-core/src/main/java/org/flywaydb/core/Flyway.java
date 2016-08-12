@@ -21,6 +21,7 @@ import org.flywaydb.core.api.MigrationInfoService;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
 import org.flywaydb.core.api.configuration.FlywayConfiguration;
+import org.flywaydb.core.api.migration.sql.SqlMigrationErrorHandler;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.flywaydb.core.internal.command.DbBaseline;
@@ -35,6 +36,7 @@ import org.flywaydb.core.internal.dbsupport.Schema;
 import org.flywaydb.core.internal.info.MigrationInfoServiceImpl;
 import org.flywaydb.core.internal.metadatatable.MetaDataTable;
 import org.flywaydb.core.internal.metadatatable.MetaDataTableImpl;
+import org.flywaydb.core.internal.migration.sql.AlwaysFailSqlMigrationErrorHandler;
 import org.flywaydb.core.internal.resolver.CompositeMigrationResolver;
 import org.flywaydb.core.internal.util.ClassUtils;
 import org.flywaydb.core.internal.util.ConfigurationInjectionUtils;
@@ -171,6 +173,11 @@ public class Flyway implements FlywayConfiguration {
      * which using the defaults translates to V1_1__My_description.sql</p>
      */
     private String sqlMigrationSuffix = ".sql";
+
+    /**
+     * The sql migration error handler to use. (default: an implementation that will always ask for immediate failure)
+     */
+    private SqlMigrationErrorHandler sqlMigrationErrorHandler = new AlwaysFailSqlMigrationErrorHandler();
 
     /**
      * Ignore future migrations when reading the metadata table. These are migrations that were performed by a
@@ -358,6 +365,11 @@ public class Flyway implements FlywayConfiguration {
     @Override
     public String getSqlMigrationPrefix() {
         return sqlMigrationPrefix;
+    }
+
+    @Override
+    public SqlMigrationErrorHandler getSqlMigrationErrorHandler() {
+        return sqlMigrationErrorHandler;
     }
 
     @Override
@@ -700,6 +712,14 @@ public class Flyway implements FlywayConfiguration {
      */
     public void setSqlMigrationPrefix(String sqlMigrationPrefix) {
         this.sqlMigrationPrefix = sqlMigrationPrefix;
+    }
+
+    /**
+     * Sets the sql migration error handler.
+     * @param sqlMigrationErrorHandler The sql migration error handler to set
+     */
+    public void setSqlMigrationErrorHandler(SqlMigrationErrorHandler sqlMigrationErrorHandler){
+        this.sqlMigrationErrorHandler = sqlMigrationErrorHandler;
     }
 
     /**
@@ -1125,7 +1145,7 @@ public class Flyway implements FlywayConfiguration {
 
         return new CompositeMigrationResolver(dbSupport, scanner, this, locations,
                 encoding, sqlMigrationPrefix, repeatableSqlMigrationPrefix, sqlMigrationSeparator, sqlMigrationSuffix,
-                createPlaceholderReplacer(), resolvers);
+                createPlaceholderReplacer(), sqlMigrationErrorHandler, resolvers);
     }
 
     /**

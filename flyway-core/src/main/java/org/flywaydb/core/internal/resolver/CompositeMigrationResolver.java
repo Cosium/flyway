@@ -17,6 +17,7 @@ package org.flywaydb.core.internal.resolver;
 
 import org.flywaydb.core.api.configuration.FlywayConfiguration;
 import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.api.migration.sql.SqlMigrationErrorHandler;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.dbsupport.DbSupport;
@@ -65,6 +66,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
      * @param sqlMigrationSeparator        The file name separator for sql migrations.
      * @param sqlMigrationSuffix           The file name suffix for sql migrations.
      * @param placeholderReplacer          The placeholder replacer to use.
+     * @param sqlMigrationErrorHandler     The sql migration error handler to use
      * @param customMigrationResolvers     Custom Migration Resolvers.
      */
     public CompositeMigrationResolver(DbSupport dbSupport, Scanner scanner, FlywayConfiguration config, Locations locations,
@@ -72,11 +74,12 @@ public class CompositeMigrationResolver implements MigrationResolver {
                                       String sqlMigrationPrefix, String repeatableSqlMigrationPrefix,
                                       String sqlMigrationSeparator, String sqlMigrationSuffix,
                                       PlaceholderReplacer placeholderReplacer,
+                                      SqlMigrationErrorHandler sqlMigrationErrorHandler,
                                       MigrationResolver... customMigrationResolvers) {
         if (!config.isSkipDefaultResolvers()) {
             for (Location location : locations.getLocations()) {
                 migrationResolvers.add(new SqlMigrationResolver(dbSupport, scanner, location, placeholderReplacer,
-                        encoding, sqlMigrationPrefix, repeatableSqlMigrationPrefix, sqlMigrationSeparator, sqlMigrationSuffix));
+                        encoding, sqlMigrationPrefix, repeatableSqlMigrationPrefix, sqlMigrationSeparator, sqlMigrationSuffix, sqlMigrationErrorHandler));
                 migrationResolvers.add(new JdbcMigrationResolver(scanner, location, config));
 
                 if (new FeatureDetector(scanner.getClassLoader()).isSpringJdbcAvailable()) {

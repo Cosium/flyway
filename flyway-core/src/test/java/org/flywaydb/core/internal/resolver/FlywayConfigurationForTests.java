@@ -22,7 +22,9 @@ import javax.sql.DataSource;
 import org.flywaydb.core.api.configuration.FlywayConfiguration;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
+import org.flywaydb.core.api.migration.sql.SqlMigrationErrorHandler;
 import org.flywaydb.core.api.resolver.MigrationResolver;
+import org.flywaydb.core.internal.migration.sql.AlwaysFailSqlMigrationErrorHandler;
 
 /**
  * Dummy Implementation of {@link FlywayConfiguration} for unit tests.
@@ -39,6 +41,7 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     private MyCustomMigrationResolver[] migrationResolvers = new MyCustomMigrationResolver[0];
     private boolean skipDefaultResolvers;
     private boolean skipDefaultCallbacks;
+    private SqlMigrationErrorHandler sqlMigrationErrorHandler = new AlwaysFailSqlMigrationErrorHandler();
 
     public FlywayConfigurationForTests(ClassLoader contextClassLoader, String[] locations, String encoding,
             String sqlMigrationPrefix, String repeatableSqlMigrationPrefix, String sqlMigrationSeparator, String sqlMigrationSuffix,
@@ -131,6 +134,15 @@ public class FlywayConfigurationForTests implements FlywayConfiguration {
     @Override
     public String getSqlMigrationPrefix() {
         return sqlMigrationPrefix;
+    }
+
+    @Override
+    public SqlMigrationErrorHandler getSqlMigrationErrorHandler() {
+        return sqlMigrationErrorHandler;
+    }
+
+    public void setSqlMigrationErrorHandler(SqlMigrationErrorHandler sqlMigrationErrorHandler){
+        this.sqlMigrationErrorHandler = sqlMigrationErrorHandler;
     }
 
     @Override
